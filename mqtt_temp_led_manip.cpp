@@ -57,14 +57,11 @@ bool verificacao_topico(const char *topico) {
 }
 
 static void mqtt_dados_recebidos_cb(void *arg, const uint8_t *dados, uint16_t tamanho, uint8_t flags){
-  printf("dados brutos recebidos:\n %s\n", dados);
+  char buff[5] = {0};
+  strncpy(buff, (char *) dados, tamanho);
+  printf("dados brutos recebidos:\n %s\n", buff);
   printf("tamanho dos dados recebidos: %d\n", tamanho);
-  char limite_velocidade = 4;
-  if (tamanho > limite_velocidade) {
-    printf("Erro: Tamanho dos dados recebidos excede o buffer\n");
-    return;
-  }
-  if(verificacao_mensagem((const char*)dados)) {
+  if(verificacao_mensagem(buff)) {
     mensagem_valida = true;
     printf("Status da mensagem: %d\n", mensagem_valida);
     // printf("dados depois da validação:\n %s\n", dados_tratados);
@@ -203,7 +200,7 @@ int main()
             printf("Mensagem colocada na fila de envio com sucesso!\n");
           }
         }
-        sleep_ms(1000);
+        sleep_ms(200);
         
         if (mensagem_valida && topico_led_acessado) {
           chave_led = true;
